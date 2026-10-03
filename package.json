@@ -6,9 +6,11 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@remotion/bundler": "4.0.532",
     "@remotion/cli": "4.0.532",
     "@remotion/google-fonts": "4.0.532",
     "@remotion/media": "4.0.532",
+    "@remotion/renderer": "4.0.532",
     "@remotion/tailwind-v4": "4.0.532",
     "@remotion/zod-types": "4.0.532",
     "react": "19.2.3",
@@ -31,7 +33,8 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "new-match": "node scripts/new-match.mjs",
-    "match": "node --no-warnings scripts/match.mjs"
+    "match": "node --no-warnings scripts/match.mjs",
+    "app": "node --no-warnings server/index.mjs"
   },
   "sideEffects": [
     "*.css"
