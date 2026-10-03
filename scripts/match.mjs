@@ -133,17 +133,19 @@ if (result.status !== 0) {
 // ---- Result: same deterministic simulation the video used ----
 let scoreLine = "hesaplanamadı";
 try {
-  const { MATCH_CONFIG, GAME_SECONDS } = await import("../src/LogoFootball/config.ts");
+  const { MATCH_CONFIG, GAME_SECONDS, matchMinuteLabel } = await import(
+    "../src/LogoFootball/config.ts"
+  );
   const { getMatch } = await import("../src/LogoFootball/motion.ts");
   const fps = 30; // LogoFootball composition fps (src/Root.tsx)
-  const match = getMatch(gameSeed, fps, GAME_SECONDS * fps, MATCH_CONFIG);
+  const gameFrames = GAME_SECONDS * fps;
+  const match = getMatch(gameSeed, fps, gameFrames, MATCH_CONFIG);
   const last = match.frames[match.frames.length - 1];
   const goals = match.goalEvents
-    .map((e) => {
-      const s = e.frame / fps;
-      const time = `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-      return `${time} ${e.scoringTeam === "home" ? homeName : awayName} (${e.homeScore}-${e.awayScore})`;
-    })
+    .map(
+      (e) =>
+        `${matchMinuteLabel(e.frame, gameFrames)} ${e.scoringTeam === "home" ? homeName : awayName} (${e.homeScore}-${e.awayScore})`,
+    )
     .join(", ");
   scoreLine = `${homeName} ${last.homeScore} - ${last.awayScore} ${awayName}` + (goals ? `\n  Goller: ${goals}` : "");
 } catch (error) {

@@ -24,8 +24,8 @@ export const RemotionRoot: React.FC = () => {
         id="LogoFootball"
         component={LogoFootball}
         schema={logoFootballSchema}
-        // 60 s game + 2 s final score screen
-        durationInFrames={1860}
+        // 60 s game (0' → 90+3') + 3.5 s final score screen
+        durationInFrames={1905}
         fps={30}
         width={1080}
         height={1920}

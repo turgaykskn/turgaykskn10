@@ -5,6 +5,27 @@ import type { MatchConfig } from "./motion";
 /** The match itself; the composition runs a bit longer for the final score screen */
 export const GAME_SECONDS = 60;
 
+// Match clock: 0' … 90', then 90+1' … 90+3'. Every step is shown equally long,
+// so the 94 steps are spread evenly over the 60 seconds of play.
+export const STOPPAGE_MINUTES = 3;
+export const CLOCK_STEPS = 90 + STOPPAGE_MINUTES + 1;
+
+/** Clock step for a frame: 0 = 0', 90 = 90', 93 = 90+3' (stays there after the game) */
+export const matchMinuteIndex = (frame: number, gameFrames: number) =>
+  Math.min(CLOCK_STEPS - 1, Math.max(0, Math.floor((frame * CLOCK_STEPS) / gameFrames)));
+
+/** First frame on which a clock step is shown */
+export const matchMinuteStartFrame = (index: number, gameFrames: number) =>
+  Math.ceil((index * gameFrames) / CLOCK_STEPS);
+
+/** "34'", "90'", "90+2'" */
+export const formatMatchMinute = (index: number) =>
+  index <= 90 ? `${index}'` : `90+${index - 90}'`;
+
+/** Match minute label for a frame, e.g. for goal times */
+export const matchMinuteLabel = (frame: number, gameFrames: number) =>
+  formatMatchMinute(matchMinuteIndex(frame, gameFrames));
+
 /** Width of the glowing arena boundary line */
 export const ARENA_RING = 5;
 

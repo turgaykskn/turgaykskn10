@@ -17,6 +17,9 @@ import {
   ARENA_SIZE,
   BALL_SIZE,
   GAME_SECONDS,
+  formatMatchMinute,
+  matchMinuteIndex,
+  matchMinuteStartFrame,
   GOAL_DEPTH,
   GOAL_MOUTH,
   MATCH_CONFIG,
@@ -33,34 +36,28 @@ const { fontFamily } = loadFont("normal", {
   subsets: ["latin", "latin-ext"],
 });
 
-const PULSE_SECONDS = 10;
 const PULSE_SCALE = 1.06;
+// The clock pulses on each tick from 90' on (90', 90+1', 90+2', 90+3')
+const PULSE_FROM_INDEX = 90;
 
-const formatClock = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-};
-
-// Countdown derived purely from the frame number: 01:00 on the first frame,
-// each second lasts exactly `fps` frames, 00:00 from the last game frame on.
-const useCountdown = (gameFrames: number) => {
+// Football-style match clock derived purely from the frame number:
+// 0' on the first frame, 90+3' on the last game frame and after it.
+const useMatchClock = (gameFrames: number) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const framesLeft = Math.max(0, gameFrames - 1 - frame);
-  const secondsLeft = Math.ceil(framesLeft / fps);
+  const index = matchMinuteIndex(frame, gameFrames);
 
-  // Frames elapsed since the displayed value last changed
-  const sinceTick = (fps - (framesLeft % fps)) % fps;
+  // Frames since the displayed value last changed
+  const sinceTick = frame - matchMinuteStartFrame(index, gameFrames);
   const pulse =
-    secondsLeft > 0 && secondsLeft <= PULSE_SECONDS
+    index >= PULSE_FROM_INDEX && frame < gameFrames
       ? interpolate(sinceTick, [0, fps * 0.4], [PULSE_SCALE, 1], {
           extrapolateRight: "clamp",
           easing: Easing.out(Easing.quad),
         })
       : 1;
 
-  return { time: formatClock(secondsLeft), scale: pulse };
+  return { time: formatMatchMinute(index), scale: pulse };
 };
 
 const Background: React.FC = () => (
@@ -152,7 +149,7 @@ export const LogoFootball: React.FC<LogoFootballProps> = ({
   const c = ARENA_SIZE / 2;
   const { fps } = useVideoConfig();
   const gameFrames = Math.round(GAME_SECONDS * fps);
-  const countdown = useCountdown(gameFrames);
+  const clock = useMatchClock(gameFrames);
   const frame = useCurrentFrame();
   // Simulation covers the game only; after it the last frame stays frozen
   const match = getMatch(gameSeed, fps, gameFrames, MATCH_CONFIG);
@@ -186,8 +183,8 @@ export const LogoFootball: React.FC<LogoFootballProps> = ({
         awayTeam={awayTeam}
         homeScore={homeScore}
         awayScore={awayScore}
-        time={countdown.time}
-        timerScale={countdown.scale}
+        time={clock.time}
+        timerScale={clock.scale}
       />
       <GoalOverlay
         goalEvents={match.goalEvents}
