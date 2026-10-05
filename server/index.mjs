@@ -1,6 +1,6 @@
 // Local "Amatör Arena" match maker.
 //
-//   npm run app  ->  http://localhost:3001
+//   npm run app  ->  http://localhost:3003
 //
 // Serves the single-page UI from app/, accepts two team names + logos, and renders
 // the existing LogoFootball composition with @remotion/renderer (Node side).
@@ -19,7 +19,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const APP_DIR = path.join(ROOT, "app");
 const RENDERS_DIR = path.join(ROOT, "renders");
 const GENERATED_DIR = path.join(ROOT, "public", "generated");
-const PORT = Number(process.env.PORT || 3001);
+const PORT = Number(process.env.PORT || 3003);
 const COMPOSITION_ID = "LogoFootball";
 const MAX_BODY_BYTES = 25 * 1024 * 1024; // two logos as base64
 const MAX_LOGO_BYTES = 10 * 1024 * 1024;
